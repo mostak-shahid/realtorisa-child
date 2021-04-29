@@ -148,13 +148,13 @@ function crb_attach_theme_options() {
             ->set_attribute( 'placeholder', 'Ex: per clean / billed weekly' ),
         Field::make( 'text', 'mos-pricing-subtitle', __( 'Sub Heading' ) ),
         Field::make( 'textarea', 'mos-pricing-desc', __( 'Desacription' ) ),
-        Field::make( 'complex', 'crb_slider', __( 'Features' ) )
+        Field::make( 'complex', 'mos-pricing-features', __( 'Features' ) )
             ->add_fields( array(
-                Field::make( 'text', 'mos-pricing-feature', __( 'Feature' ) ),
+                Field::make( 'text', 'item', __( 'Feature' ) ),
             )),
         Field::make( 'text', 'mos-pricing-btn-title', __( 'Button' ) ),
         Field::make( 'text', 'mos-pricing-btn-url', __( 'URL' ) ),
-        Field::make( 'select', 'mos-counter-alignment', __( 'Content Alignment' ) )
+        Field::make( 'select', 'mos-member-alignment', __( 'Content Alignment' ) )
         ->set_options( array(
             'left' => 'Left',
             'right' => 'Right',
@@ -164,8 +164,8 @@ function crb_attach_theme_options() {
     ->set_icon( 'list-view' )
     ->set_render_callback( function ( $fields, $attributes, $inner_blocks ) {
         ?>
-        <div class="mos-counter-pricing-wrapper <?php echo $attributes['className'] ?>">
-            <div class="mos-counter-pricing text-<?php echo esc_html( $fields['mos-counter-alignment'] ) ?>">            
+        <div class="mos-pricing-wrapper <?php echo $attributes['className'] ?>">
+            <div class="mos-pricing text-<?php echo esc_html( $fields['mos-member-alignment'] ) ?>">            
                 <div class="title-part">
                     <h3><?php echo esc_html( $fields['mos-pricing-title'] ); ?></h3>
                 </div>
@@ -173,26 +173,65 @@ function crb_attach_theme_options() {
                     <div class="pricing-value"> <span class="pricing-symbol"><?php echo esc_html( $fields['mos-pricing-symbol'] ); ?></span> <span class="pricing-amount"><?php echo esc_html( $fields['mos-pricing-amount'] ); ?></span> <span class="plan-period"><?php echo esc_html( $fields['mos-pricing-period'] ); ?></span>
                     </div>
                 </div>
-                <?php if ($fields['mos-pricing-subtitle']) : ?>
+                <?php if (@$fields['mos-pricing-subtitle']) : ?>
                     <h5 class="desc-subtitle"><?php echo esc_html( $fields['mos-pricing-subtitle'] ); ?></h5>
                 <?php endif?>
-                <?php if ($fields['mos-pricing-desc']) : ?>
+                <?php if (@$fields['mos-pricing-desc']) : ?>
                     <div class="desc-part"><?php echo esc_html( $fields['mos-pricing-desc'] ); ?></div>
                 <?php endif?>
+                <?php if (sizeof(@$fields['mos-pricing-features'])) : ?>
                 <div class="features-part">
                     <ul class="pricing-features">
-                        <li>Custom schedules everyday.</li>
-                        <li>Desks and workstations cleaning.</li>
-                        <li>Washrooms cleaning.</li>
-                        <li>Floor cleaning.</li>
-                        <li>Waiting area cleaning.</li>
+                        <?php foreach ($fields['mos-pricing-features'] as $value) : ?>
+                            <li><?php echo $value['item'] ?></li>
+                        <?php endforeach;?>
                     </ul>
                 </div>
-                
-                <?php if($fields['mos-pricing-btn-title'] && $fields['mos-pricing-btn-url']) : ?>
+                <?php endif?>
+                <?php if(@$fields['mos-pricing-btn-title'] && @$fields['mos-pricing-btn-url']) : ?>
                 <div class="wp-block-buttons"><div class="wp-block-button"><a href="<?php echo esc_html( $fields['mos-pricing-btn-url'] ); ?>" title="" class="wp-block-button__link"><?php echo esc_html( $fields['mos-pricing-btn-title'] ); ?></a></div></div>
                 <?php endif;?>
             
+            </div>
+        </div>
+        <?php
+    });
+    Block::make( __( 'Mos Team Member' ) )
+    ->add_fields( array(
+        Field::make( 'image', 'mos-member-media', __( 'Image' ) ),
+        Field::make( 'text', 'mos-member-title', __( 'Name' ) ),
+        Field::make( 'text', 'mos-member-designation', __( 'Designation' ) ),
+        Field::make( 'text', 'mos-member-url', __( 'URL' ) ),
+        Field::make( 'select', 'mos-member-alignment', __( 'Content Alignment' ) )
+        ->set_options( array(
+            'left' => 'Left',
+            'right' => 'Right',
+            'center' => 'Center',
+        ))
+    ))
+    ->set_icon( 'admin-users' )
+    ->set_render_callback( function ( $fields, $attributes, $inner_blocks ) {
+        ?>
+        <div class="mos-member-wrapper <?php echo $attributes['className'] ?>">
+            <div class="mos-member position-relative text-<?php echo esc_html( $fields['mos-member-alignment'] ) ?>"> 
+                <?php if (@$fields['mos-member-media']): ?>
+                    <div class="img-part">
+                        <?php echo wp_get_attachment_image( $fields['mos-member-media'], 'full' ); ?>   
+                    </div>  
+                <?php endif?>
+                <div class="text-part">
+                    <?php if (@$fields['mos-member-title']): ?>
+                        <h3 class="title-part"><?php echo esc_html( $fields['mos-member-title'] ); ?></h3>
+                    <?php endif?>
+                    <?php if (@$fields['mos-member-designation']): ?>
+                        <div class="designation-part">
+                            <?php echo esc_html( $fields['mos-member-designation'] ); ?>
+                        </div> 
+                    <?php endif?>
+                </div> 
+                <?php if (@$fields['mos-member-url']): ?>
+                    <a class="hidden-link" href="<?php echo esc_html( $fields['mos-member-url'] ); ?>">Read More</a> 
+                <?php endif?>           
             </div>
         </div>
         <?php
